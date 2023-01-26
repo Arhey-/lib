@@ -10,9 +10,11 @@ function reactive(value) {
 
   rx.dispose = () => subs.splice(0);
   rx.watch = cb => subs.push(cb);
-  rx.map = fn => {
-    const m = reactive(fn(value))
-    rx.watch(v => m(fn(v)))
+  rx.map = (fn, ...deps) => {
+    const m = reactive(fn(value, ...deps.map(d => d())))
+    for (const d of [rx, ...deps]) {
+      d.watch(() => m(fn(value, ...deps.map(d => d()))))
+    }
     return m
   };
   rx.toString = () => value;
