@@ -4,7 +4,7 @@ function createElement(name, opts = {}, ...children) {
   if (typeof opts == 'function' && 'button' == name) {
     opts = { onclick: opts }
   }
-  return Object.assign(el,opts)
+  return Object.assign(el, opts)
 }
 
 export const html = new Proxy(createElement, {
@@ -17,9 +17,9 @@ export const html = new Proxy(createElement, {
     : createElement(name, props, ...childs)
 })
 
-export function select(opts){
-  const s=html.select()
-  for(const v of opts)
+export function select(opts) {
+  const s = html.select()
+  for (const v of opts)
     s.append(option(v))
   return s
 }
