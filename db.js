@@ -42,11 +42,11 @@ export class DB {
 		return await this.transaction(store, s => s.get(key))
 	}
 
-	async getAll(store, key, query, count) {
+	async getAll(store, query, count) {
 		return await this.transaction(store, s => s.getAll(query, count))
 	}
 
-	async count(store, key, query) {
+	async count(store, query) {
 		return await this.transaction(store, s => s.count(query))
 	}
 
