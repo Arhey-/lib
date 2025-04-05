@@ -114,7 +114,7 @@ function request(/** @type {IDBRequest} */ r) {
 /*
 window.db = new DB('testdb', 1, (/** @type {IDBVersionChangeEvent} * / e) => {
 	if (e.oldVersion == 0 && e.newVersion == 1) {
-		const db = event.target.result;
+		const db = e.target.result;
 		const s = db.createObjectStore('links', { keyPath: 'url' });
 		// s.createIndex('tags', 'tags', { unique: false }); // multi
 	} else {
