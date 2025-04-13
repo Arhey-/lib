@@ -1,34 +1,55 @@
-let isBatching = false;
-const batching = new Map();
+const batchs = []
 
+// TODO is not tested with nested reactives
 export function batch(fn) {
-  isBatching = true;
+  batchs.push(new Map)
   fn();
-  isBatching = false;
-  for(const [cb, value] of batching) {
+  for(const [cb, value] of batchs.pop()) {
     cb(value)
   }
-  batching.clear()
 }
 
+const tracking = [];
+
+export function watch(fn) {
+  const deps = new Set;
+  tracking.push(deps)
+  fn();
+  tracking.pop()
+  const uns = [...deps].map(d => d.watch(rewatch))
+
+  function rewatch() {
+    uns.forEach(un => un())
+    watch(fn)
+  }
+}
+
+// TODO avoid cross deps
 export function reactive(value, opts) {
   const subs = [];
 
   function rx(v) {
-    if (!arguments.length) return value;
-    if ((opts?.eq ?? Object.is)(v, value)) return;
+    if (!arguments.length) {
+      tracking.at(-1)?.add(rx)
+      return value;
+    }
+    if ((opts?.eq ?? Object.is)(value, v)) return;
     value = v;
     for (const cb of subs) {
-      if (isBatching) {
-        batching.set(cb, value)
-      } else {
+      if (!batchs.at(-1)?.set(cb, value)) {
         cb(value)
       }
     }
   }
 
   rx.dispose = () => subs.splice(0);
-  rx.watch = cb => subs.push(cb);
+  rx.watch = cb => {
+    subs.push(cb);
+    return () => {
+      const i = subs.findIndex(s => s === cb)
+      if (~i) subs.splice(i, 1)
+    }
+  };
   rx.map = (fn, ...deps) => {
     const m = reactive(fn(value, ...deps.map(d => d())))
     const w = () => m(fn(value, ...deps.map(d => d())))
