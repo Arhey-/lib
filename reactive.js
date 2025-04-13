@@ -11,12 +11,12 @@ export function batch(fn) {
   batching.clear()
 }
 
-export function reactive(value) {
+export function reactive(value, opts) {
   const subs = [];
 
   function rx(v) {
     if (!arguments.length) return value;
-    if (v === value) return;
+    if ((opts?.eq ?? Object.is)(v, value)) return;
     value = v;
     for (const cb of subs) {
       if (isBatching) {
