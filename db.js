@@ -107,7 +107,7 @@ export class DB {
 function request(/** @type {IDBRequest} */ r) {
 	return new Promise((res, reject) => {
 		r.onsuccess = e => res(e.target.result)
-		r.onerror = reject
+		r.onerror = e => reject(e.target.error)
 	})
 }
 
